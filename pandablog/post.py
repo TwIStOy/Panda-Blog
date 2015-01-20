@@ -41,6 +41,7 @@ class Post(object):
         # Check for necessary files.
         self.fp = open(root, "r", "utf-8")
         config = analyze_post(self.fp)
+        self.root = root
 
         # *post content*. It shouldn't be read before we can determine whether the post should be compile.
         self.content = None

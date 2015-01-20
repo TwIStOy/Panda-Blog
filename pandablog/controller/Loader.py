@@ -82,9 +82,8 @@ class Loader(object):
                 func(self)
         return resource
 
-    def load(self):
-        """
-        load resource will run the plugins in order
+    def run(self):
+        """Loader will run the plugins in order
         :return: all the resource
         """
         for func in self.callback['<']:
