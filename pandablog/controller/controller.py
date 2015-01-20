@@ -2,7 +2,28 @@
 __author__ = 'TwIStOy'
 
 import Loader
+import Selector
+import Renderer
+from .. import util
+import os
+import json
 
 
 class Controller(object):
-    pass
+    def __init__(self, root):
+        if os.path.exists(util.get_path(root, 'config.json')) and \
+           os.path.isfile(util.get_path(root, 'config.json')):
+            with open(util.get_path(root, 'config.json'), "r", "utf-8") as fp:
+                global_config = json.load(fp)
+        else:
+            raise OSError('No "config.json" file! Please check and retry.')
+        self.global_config = global_config
+        self.loader = Loader.Loader(util.get_path(root, 'src'), global_config)
+        self.selector = Selector.Selector(root)
+        self.renderer = Renderer.Renderer(root, global_config)
+
+    def run(self):
+        resource = self.loader.run()
+        for_render = self.selector.run(resource)
+        self.renderer.run(resource, for_render)
+

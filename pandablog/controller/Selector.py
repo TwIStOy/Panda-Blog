@@ -47,12 +47,13 @@ class Selector(object):
             func(self)
         return rv
 
-    def run(self):
+    def run(self, resource):
         """Selector will run in order
         :return: all the resource must be compile
         """
         for func in self.callback['<']:
             func(self)
+        self._init(resource)
         rv = self._select()
         for func in self.callback['>']:
             func(self)
@@ -70,14 +71,14 @@ class Selector(object):
             raise controller_error.ControllerError('Error position register in Selector.')
         self.callback[position].append(callback)
 
-    def __init__(self, root, resource):
+    def __init__(self, root):
         # root: /panda/
         self.root = root
-        self.resource = resource
+        self.resource = None
         self.callback = dict()
 
-    def _init(self):
-        pass
+    def _init(self, resource):
+        self.resource = resource
 
     def _md5_verify(self, which):
         """verify posts' md5, if equal, "make" will be False
@@ -148,7 +149,6 @@ class Selector(object):
                 json.dump(new_archive_info, fp)
             return [t for t, p in new_archive_info if archive_info.get(t) == p]
 
-        return {ahv: _archive_select(archive[ahv], ahv)
-                for ahv in ['tag', 'month', 'author', 'category']}
+        return {ahv: _archive_select(ahv) for ahv in ['tag', 'month', 'author', 'category']}
 
 

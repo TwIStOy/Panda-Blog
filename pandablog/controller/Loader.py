@@ -2,7 +2,6 @@
 __author__ = 'TwIStOy'
 
 from .. import post
-from .. import util
 import os
 import collections
 from jinja2 import Environment, FileSystemLoader
