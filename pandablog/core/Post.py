@@ -84,6 +84,7 @@ class MetaInfo(object):
             file = open(filename, 'r', 'utf-8')
         except IOError, e:
             log.warning('cannot retrive meta info from' + filename + '!\n' + str(e))
+            return
         for line in file.readline():
             if line == '': break
             result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
