@@ -2,9 +2,9 @@
 __author__ = 'TwIStOy'
 
 import os
-import log
+import Log as log
 import hashlib
-import mk_transfer as mkt
+import MkTransfer as mkt
 import json
 
 
@@ -54,7 +54,7 @@ def _get_path(*parts):
 def get_path(*parts):
     new_parts = _get_path(*parts)
     rv = ""
-    for index, part in enumerate(parts):
+    for index, part in enumerate(new_parts):
         if index == 0:
             rv = part
         else:

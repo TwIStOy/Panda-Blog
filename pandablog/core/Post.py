@@ -145,7 +145,7 @@ class Post(object):
         self.year, self.month, self.date = [int(item) for item in self.create_time.split('-')]
 
         # Try to get *post category* from "info.json".
-        # Will set to Uncategorized" on failure.
+        # Will set to "Uncategorized" on failure.
         self.category = config.get('category')
         if not self.category:
             self.category = "Uncategorized"

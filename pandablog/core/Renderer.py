@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 __author__ = 'TwIStOy'
 
-from .. import util
+import Util as util
 
 
 class Renderer(object):

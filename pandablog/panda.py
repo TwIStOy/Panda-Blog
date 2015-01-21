@@ -1,6 +1,6 @@
 __author__ = 'TwIStOy'
 
 
-import ArgParser
+import core.ArgParser
 
 

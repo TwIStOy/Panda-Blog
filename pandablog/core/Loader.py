@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 __author__ = 'TwIStOy'
 
-from .. import post
+import Post as post
 import os
 import collections
 from jinja2 import Environment, FileSystemLoader
-import controller_error
+import ControllerError as controller_error
 
 
 class Loader(object):

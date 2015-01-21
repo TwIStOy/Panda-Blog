@@ -4,7 +4,7 @@ __author__ = 'TwIStOy'
 import Loader
 import Selector
 import Renderer
-from .. import util
+import Util as util
 import os
 import json
 

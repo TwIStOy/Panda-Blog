@@ -1,10 +1,10 @@
 __author__ = 'TwIStOy'
 
-from .. import util
+import Util as util
 import os
 import json
 import shutil
-import controller_error
+import ControllerError as controller_error
 import itertools
 import collections
 
