@@ -2,31 +2,31 @@
 __author__ = 'TwIStOy'
 
 import os
-import json
 import urllib
 import re
 import log
 import util
 
 
-def analyze_post(fp):
-    """
-    This function takes raw markdown text file and return a dict containing meta-data and content from the text file.
-    It will try to retrieve meta data until it reach an empty line. Or in other way, only lines before the first blank
-    line in input text will be treated as meta-info. Each meta-info should be in the form of "attr:value".
-    Attributes are case-insensitive during analyzing and output attribute will be in lower-case. Any text unrecognized
-    as meta info will be treated as content.
-    The return value will be a dict containing key "meta" and "content".
+def get_post_meta_from_file(fp):
+    """Takes a file and return a dict containing meta-data from the text file. It will try to extract
+    meta-info from every line before it reach the first empty line, which separates the meta-date and the content.
+    Each meta-info should be in the form of "attr:value". Attributes are case-insensitive during analyzing
+    and output attribute will be in lower-case. Any text unrecognized as meta info will be treated as content.
+    :return: a dict containing meta-info
     """
     meta = dict()
+    try:
+        fp.seek(0)
+    except:
+        pass
     for line in fp.readline():
         if line == '':
             return meta
-        if getting_meta:
-            result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
-            if result:
-                attr, value = result.group(1).strip().lower(), result.group(2).strip()
-                meta[attr] = value
+        result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
+        if result:
+            attr, value = result.group(1).strip().lower(), result.group(2).strip()
+            meta[attr] = value
     return meta
 
 
@@ -35,7 +35,6 @@ class PostError(Exception):
 
 
 class Post(object):
-
     def __init__(self, root, global_config):
 
         # Check for necessary files.
@@ -96,9 +95,6 @@ class Post(object):
     def get_content(self):
         """self.content will be set after this method.
             It convert markdown file to HTML file.
-        :return:
-        """
-        """
         :return:
         """
         self.content = util.mk_transfer(self.fp.read())
