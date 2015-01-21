@@ -2,7 +2,7 @@
 __author__ = 'TwIStOy'
 
 import Util as util
-
+import codecs
 
 class Renderer(object):
     """Renderer is the last part of the controller.
@@ -47,7 +47,7 @@ class Renderer(object):
             self.context['post'] = post
             text = self.resource['template'][which].render(**self.context)
             util.create_dir(util.get_path(self.root, 'public', which, post.url))
-            with open(util.get_path(self.root, 'public', which, post.url, 'index.html'), 'w', 'utf-8') as fp:
+            with codecs.open(util.get_path(self.root, 'public', which, post.url, 'index.html'), 'w', encoding='utf-8') as fp:
                 fp.write(text)
 
     def _render_archive(self, which):
@@ -57,7 +57,7 @@ class Renderer(object):
             self.context['archive'] = po
             text = self.resource['template'][which].render(**self.context)
             util.create_dir(util.get_path(self.root, 'public', 'archive', which, ar))
-            with open(util.get_path(self.root, 'public', 'archive', which, ar, "index.html"), "w", 'utf-8') as fp:
+            with codecs.open(util.get_path(self.root, 'public', 'archive', which, ar, "index.html"), "w", encoding='utf-8') as fp:
                 fp.write(text)
 
     def _render(self):

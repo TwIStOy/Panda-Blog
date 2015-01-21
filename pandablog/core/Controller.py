@@ -7,13 +7,14 @@ import Renderer
 import Util as util
 import os
 import json
+import codecs
 
 
 class Controller(object):
     def __init__(self, root):
         if os.path.exists(util.get_path(root, 'config.json')) and \
            os.path.isfile(util.get_path(root, 'config.json')):
-            with open(util.get_path(root, 'config.json'), "r", "utf-8") as fp:
+            with codecs.open(util.get_path(root, 'config.json'), "r", encoding='utf-8') as fp:
                 global_config = json.load(fp)
         else:
             raise OSError('No "config.json" file! Please check and retry.')

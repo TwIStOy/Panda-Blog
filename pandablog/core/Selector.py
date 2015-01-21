@@ -7,6 +7,7 @@ import shutil
 import ControllerError as controller_error
 import itertools
 import collections
+import codecs
 
 
 class Selector(object):
@@ -90,7 +91,7 @@ class Selector(object):
             if p.md5 == info.get(p.url):
                 p.make = False
             new_post_info[p.url] = p.md5
-        with open(util.get_path(self.root, "src", which, ".info"), "w", "utf-8") as fp:
+        with codecs.open(util.get_path(self.root, "src", which, ".info"), "w", encoding='utf-8') as fp:
             json.dump(new_post_info, fp)
 
     def _public_verify(self, which):
@@ -117,7 +118,7 @@ class Selector(object):
                 post.make = True
             new_public_info[post.url] = post.root
 
-        with open(util.get_path(self.root, "public", which, ".info"), "w", 'utf-8') as fp:
+        with codecs.open(util.get_path(self.root, "public", which, ".info"), "w", encoding='utf-8') as fp:
             json.dump(new_public_info, fp)
 
         for name in garbage:
@@ -145,7 +146,7 @@ class Selector(object):
             garbage = [name for name in file_list if name not in new_archive_info]
             for name in garbage:
                 shutil.rmtree(util.get_path(self.root, 'public', 'archive', which, name))
-            with open(util.get_path(self.root, 'public', 'archive', which, ".info"), "w", "utf-8") as fp:
+            with codecs.open(util.get_path(self.root, 'public', 'archive', which, ".info"), "w", encoding='utf-8') as fp:
                 json.dump(new_archive_info, fp)
             return [t for t, p in new_archive_info if archive_info.get(t) == p]
 

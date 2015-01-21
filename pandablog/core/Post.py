@@ -4,8 +4,9 @@ __author__ = 'TwIStOy'
 import os
 import urllib
 import re
-import log
-import util
+import Log as log
+import Util as util
+import codecs
 
 
 def get_post_meta_from_file(fp):
@@ -87,7 +88,7 @@ class MetaInfo(object):
     def load_from_file(self, filename):
         """load meta data from a file. return self upon finishing"""
         try:
-            file = open(filename, 'r', 'utf-8')
+            file = open(filename, 'r', encoding='utf-8')
         except IOError, e:
             log.warning('Cannot retrieve meta info from' + filename + '!\n' + str(e))
         for line in file.readline():
@@ -105,7 +106,7 @@ class Post(object):
     def __init__(self, root, global_config):
 
         # Check for necessary files.
-        self.fp = open(root, "r", "utf-8")
+        self.fp = open(root, "r", encoding='utf-8')
         config = get_post_meta_from_file(self.fp)
         self.root = root
 
@@ -151,7 +152,7 @@ class Post(object):
             self.category = "Uncategorized"
 
         # Hash post with md5 algorithm
-        with open(os.path.join(root, 'content.md'), "r", "utf-8") as fp:
+        with codecs.open(os.path.join(root, 'content.md'), "r", encoding='utf-8') as fp:
             self.md5 = util.get_file_md5(fp)
 
         # This will be set to True if this post needs compilation, False if not.
