@@ -34,12 +34,72 @@ class PostError(Exception):
     pass
 
 
+# TODO: write error handling to make this class more robust
+class MetaInfo(object):
+    def __init__(self):
+        self.author = ''
+        self.category = ''
+        self.datetime = ''
+        self.tags = []
+        self.title = ''
+        self.url = ''
+
+    def add_tags(self, str):
+        self.tags += [tag.strip() for tag in str.split(',')]
+
+    def set_datetime(self, str):
+        # TODO: storage Python builtin datetime here, not string.
+        self.datetime = str
+
+    def set_category(self, str):
+        self.category = str
+
+    def set_author(self, str):
+        self.author = str
+
+    def set_url(self, str):
+        self.url = str
+
+    def set_title(self, str):
+        self.title = str
+
+    def set_attr_value(self, attr, value):
+        """set attribute value pair"""
+        if attr == 'author':
+            self.set_author(value)
+        elif attr == 'category':
+             self.set_category(value)
+        elif attr == 'datetime':
+             self.set_datetime(value)
+        elif attr == 'tags':
+             self.add_tags(value)
+        elif attr == 'title':
+             self.set_title(value)
+        elif attr == 'url':
+             self.set_url(value)
+
+    def load_from_file(self, filename):
+        """load meta data from a file. return self upon finishing"""
+        try:
+            file = open(filename, 'r', 'utf-8')
+        except IOError, e:
+            log.warning('cannot retrive meta info from' + filename + '!\n' + str(e))
+        for line in file.readline():
+            if line == '': break
+            result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
+            if result:
+                attr = result.group(1).strip().lower()
+                value = result.group(2).strip()
+                self.set_attr_value(attr, value)
+        return self
+
+
 class Post(object):
     def __init__(self, root, global_config):
 
         # Check for necessary files.
         self.fp = open(root, "r", "utf-8")
-        config = analyze_post(self.fp)
+        config = get_post_meta_from_file(self.fp)
         self.root = root
 
         # *post content*. It shouldn't be read before we can determine whether the post should be compile.
