@@ -44,49 +44,55 @@ class MetaInfo(object):
         self.title = ''
         self.url = ''
 
-    def add_tags(self, str):
-        self.tags += [tag.strip() for tag in str.split(',')]
+    def add_tags(self, string):
+        self.tags += [tag.strip() for tag in string.split(',')]
 
-    def set_datetime(self, str):
+    def set_datetime(self, string):
         # TODO: storage Python builtin datetime here, not string.
-        self.datetime = str
+        self.datetime = string
 
-    def set_category(self, str):
-        self.category = str
+    def set_category(self, string):
+        self.category = string
 
-    def set_author(self, str):
-        self.author = str
+    def set_author(self, string):
+        self.author = string
 
-    def set_url(self, str):
-        self.url = str
+    def set_url(self, string):
+        self.url = string
 
-    def set_title(self, str):
-        self.title = str
+    def set_title(self, string):
+        self.title = string
 
     def set_attr_value(self, attr, value):
         """set attribute value pair"""
-        if attr == 'author':
-            self.set_author(value)
-        elif attr == 'category':
-             self.set_category(value)
-        elif attr == 'datetime':
-             self.set_datetime(value)
-        elif attr == 'tags':
-             self.add_tags(value)
-        elif attr == 'title':
-             self.set_title(value)
-        elif attr == 'url':
-             self.set_url(value)
+        if attr in ['author', 'category', 'datetime', 'tags', 'title', 'url']:
+            getattr(self, "set_{}".format(attr))(value)
+        else:
+            log.debug('Error attr in <set_attr_value> (attr="{attr}", value="{value}")'.format(
+                attr=attr, value=value
+            ))
+        # if attr == 'author':
+        #     self.set_author(value)
+        # elif attr == 'category':
+        #     self.set_category(value)
+        # elif attr == 'datetime':
+        #     self.set_datetime(value)
+        # elif attr == 'tags':
+        #     self.add_tags(value)
+        # elif attr == 'title':
+        #     self.set_title(value)
+        # elif attr == 'url':
+        #     self.set_url(value)
 
     def load_from_file(self, filename):
         """load meta data from a file. return self upon finishing"""
         try:
             file = open(filename, 'r', 'utf-8')
         except IOError, e:
-            log.warning('cannot retrive meta info from' + filename + '!\n' + str(e))
-            return
+            log.warning('Cannot retrieve meta info from' + filename + '!\n' + str(e))
         for line in file.readline():
-            if line == '': break
+            if line == '':
+                break
             result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
             if result:
                 attr = result.group(1).strip().lower()
@@ -131,7 +137,7 @@ class Post(object):
         if not self.author:
             self.author = global_config.get('default_author')
 
-        # *post create time*. Can't be ommited.
+        # *post create time*. Can't be omitted.
         # Then split it into year, month, date.
         self.create_time = config.get('create_time')
         if not self.create_time:
