@@ -88,7 +88,7 @@ class MetaInfo(object):
         if not self.datetime:
             self.datetime = config.default_datetime
         if not self.url:
-            self._base_url = urllib.urlencode(self.title)
+            self.url = urllib.urlencode(self.title)
 
     def load_from_file(self, filename, config):
         """load meta data from a file. return self upon finishing"""
