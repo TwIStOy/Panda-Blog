@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
-__author__ = 'TwIStOy'
+__author__ = 'TwIStOy Phunching'
 
 import urllib
 import re
-import Log as log
-import Util as util
+import Log
+import Util
 from datetime import datetime
 import codecs
 
@@ -23,37 +23,37 @@ class MetaInfo(object):
         self.title = None
         self.url = None
 
-    def add_tags(self, string):
+    def _add_tags(self, string):
         self.tags += [tag.strip() for tag in string.split(',')]
 
-    def set_tags(self, string):
-        self.add_tags(string)
+    def _set_tags(self, string):
+        self._add_tags(string)
 
-    def set_datetime(self, string):
+    def _set_datetime(self, string):
         self.datetime = datetime.strptime(string, '%Y-%m-%d')
 
-    def set_category(self, string):
+    def _set_category(self, string):
         self.category = string
 
-    def set_author(self, string):
+    def _set_author(self, string):
         self.author = string
 
-    def set_url(self, string):
+    def _set_url(self, string):
         self.url = string
 
-    def set_title(self, string):
+    def _set_title(self, string):
         self.title = string
 
-    def set_attr_value(self, attr, value):
+    def _set_attr_value(self, attr, value):
         """set attribute value pair"""
         if attr in ['author', 'category', 'datetime', 'tags', 'title', 'url']:
-            getattr(self, "set_{}".format(attr))(value)
+            getattr(self, "_set_{}".format(attr))(value)
         else:
-            log.debug('Error attr in <set_attr_value> (attr="{attr}", value="{value}")'.format(
+            Log.debug('Error attr in <set_attr_value> (attr="{attr}", value="{value}")'.format(
                 attr=attr, value=value
             ))
 
-    def init(self, config):
+    def _default_setting(self, config):
         """initialize self into a legal meta data suitable for blog content generation.
         legalize self by applying some default value from config
         """
@@ -67,11 +67,11 @@ class MetaInfo(object):
             self.datetime = config.default_datetime
         if not self.url:
             self.url = urllib.urlencode(self.title)
+        return self
 
-    def load_from_file(self, filename, config):
+    def load_from_file(self, fp, config):
         """load meta data from a file. return self upon finishing"""
         try:
-            fp = codecs.open(filename, 'r', 'utf-8')
             for line in fp.readline():
                 if line == '':
                     break
@@ -79,41 +79,46 @@ class MetaInfo(object):
                 if result:
                     attr = result.group(1).strip().lower()
                     value = result.group(2).strip()
-                    self.set_attr_value(attr, value)
+                    self._set_attr_value(attr, value)
         except Exception, e:
-            log.warning('Cannot retrieve meta info from' + filename + '!\n' + str(e))
-        return self.init(config)
+            Log.warning('Cannot retrieve meta info from' + fp.name + '!\n' + str(e))
+        return self._default_setting(config)
 
     def __le__(self, other):
         return self.datetime < other.datetime
 
+
 class Post(object):
     def __init__(self, filename, config):
-        self.meta_info = MetaInfo()
-        self.meta_info.load_from_file(filename, config)
-        self.need_compilation = False
+        self.fp = codecs.open(filename, 'r', 'utf-8')
+        self.meta_info = MetaInfo().load_from_file(self.fp, config)
+        self.need_compilation = True
         self.filename = filename
+        self.url = None
+        self.content = None
 
     def init_meta(self):
         self.meta_info.load_from_file(self.filename)
 
     def generate_html_content(self):
-        """Return generated html content"""
-        with codecs.open(self.filename, 'r', 'utf-8') as fp:
-            content = util.mk_transfer(fp.read())
-        return content
+        """Generate html content"""
+        self.content = Util.mk_transfer(self.fp.read())
+        return self
 
     def get_url(self, urls):
         """Get the real url of the post. Resolve conflicts by appending -n to the base url"""
         now = self.meta_info.url
         if now in urls:
-            now = now + '-'
+            now += '-'
             addition = 1
             while now + str(addition) in urls:
                 addition += 1
-            now = now + str(addition)
+            now += str(addition)
         self.url = now
         return self
 
     def __le__(self, other):
         return self.meta_info < other.meta_info
+
+    def __ge__(self, other):
+        return not self.__le__(other)

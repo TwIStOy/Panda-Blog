@@ -1,5 +1,10 @@
 __author__ = 'TwIstOy'
 
+"""
+    For test module <Util> in <core>.
+"""
+
+
 import unittest
 from pandablog.core import Util
 import os
@@ -23,7 +28,6 @@ class UtilTest(unittest.TestCase):
         for f in files:
             if os.path.isfile(f):
                 os.remove(f)
-
 
     def test_get_path(self):
         self.assertEqual(Util.get_path('c:/', 'twistoy', ['la', 'la'], "info.json"),

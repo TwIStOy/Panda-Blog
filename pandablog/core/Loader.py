@@ -6,6 +6,7 @@ import os
 import collections
 from jinja2 import Environment, FileSystemLoader
 import ControllerError as controller_error
+from pandablog.core import Util
 
 
 class Loader(object):
@@ -52,8 +53,10 @@ class Loader(object):
     def _load_post(self):
         file_list = os.listdir(self.paths['post'])
         file_list = filter(lambda name: name.endwith(".md"), file_list)
-        posts = map(lambda name: post.Post(name, self.global_config), file_list)
+        posts = map(lambda name: post.Post(Util.get_path(self.paths['post'], name),
+                                           self.global_config), file_list)
         urls = []
+        posts.sort()
         for p in posts:
             p.get_url(urls)
         return posts
@@ -61,7 +64,8 @@ class Loader(object):
     def _load_page(self):
         file_list = os.listdir(self.paths['page'])
         file_list = filter(lambda name: name.endwith(".md"), file_list)
-        return map(lambda name: post.Post(name, self.global_config), file_list)
+        return map(lambda name: post.Post(Util.get_path(self.paths['page'], name),
+                                          self.global_config), file_list)
 
     def _load_template(self):
         env = Environment(loader=FileSystemLoader(self.paths['template']))
