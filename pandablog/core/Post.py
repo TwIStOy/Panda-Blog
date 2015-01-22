@@ -7,6 +7,7 @@ import re
 import Log
 import Util
 from datetime import datetime
+import codecs
 
 
 def get_post_meta_from_file(fp):
@@ -93,7 +94,7 @@ class MetaInfo(object):
     def load_from_file(self, filename, config):
         """load meta data from a file. return self upon finishing"""
         try:
-            file = open(filename, 'r', 'utf-8')
+            file = codecs.open(filename, 'r', 'utf-8')
             for line in file.readline():
                 if line == '':
                     break
@@ -118,7 +119,7 @@ class Post(object):
 
     def generate_html_content(self):
         """Generate html content"""
-        with open(self.filename, 'r') as fp:
+        with codecs.open(self.filename, 'r', 'utf-8') as fp:
             self.content = Util.mk_transfer(self.fp.read())
         return self
 

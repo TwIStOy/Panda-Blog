@@ -6,6 +6,7 @@ import Log as log
 import hashlib
 import MkTransfer as mkt
 import json
+import codecs
 
 
 def create_dir(new_dir):
@@ -19,7 +20,7 @@ def create_dir(new_dir):
     if os.path.isfile(new_dir):
         raise OSError("A file <{0}> exists. Please check it and retry.".format(new_dir))
 
-    parent, son = os.path.split()
+    parent, son = os.path.split(new_dir)
     if parent and not os.path.isdir(parent):
         log.debug("For create {son}, create {parent}".format(son=son, parent=parent))
         create_dir(parent)
@@ -46,8 +47,9 @@ def _get_path(*parts):
     new_parts = []
     for p in parts:
         if not isinstance(p, str) and hasattr(p, "__iter__"):
-            new_parts.extend(get_path(*p))
-        new_parts.append(p)
+            new_parts.extend(_get_path(*p))
+        else:
+            new_parts.append(p)
     return new_parts
 
 
@@ -71,10 +73,10 @@ def get_json(file_path):
     :return:
     """
     if not os.path.exists(file_path):
-        with open(file_path, "w", "utf-8") as fp:
+        with codecs.open(file_path, "w", encoding='utf-8') as fp:
             fp.write("{}")
     if os.path.isdir(file_path):
         raise OSError('{} is wanted to be a json file.'.format(file_path))
-    with open(file_path, "r", "utf-8") as fp:
-        info = json.load(file_path)
+    with codecs.open(file_path, "r", encoding='utf-8') as fp:
+        info = json.load(fp)
     return info
