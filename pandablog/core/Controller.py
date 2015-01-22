@@ -12,8 +12,7 @@ import codecs
 
 class Controller(object):
     def __init__(self, root):
-        if os.path.exists(util.get_path(root, 'config.json')) and \
-           os.path.isfile(util.get_path(root, 'config.json')):
+        if os.path.isfile(util.get_path(root, 'config.json')):
             with codecs.open(util.get_path(root, 'config.json'), "r", encoding='utf-8') as fp:
                 global_config = json.load(fp)
         else:
