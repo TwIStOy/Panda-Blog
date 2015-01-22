@@ -1,35 +1,12 @@
 # -*- coding:utf-8 -*-
 __author__ = 'TwIStOy'
 
-import os
 import urllib
 import re
-import Log
-import Util
+import Log as log
+import Util as util
 from datetime import datetime
 import codecs
-
-
-def get_post_meta_from_file(fp):
-    """Takes a file and return a dict containing meta-data from the text file. It will try to extract
-    meta-info from every line before it reach the first empty line, which separates the meta-date and the content.
-    Each meta-info should be in the form of "attr:value". Attributes are case-insensitive during analyzing
-    and output attribute will be in lower-case. Any text unrecognized as meta info will be treated as content.
-    :return: a dict containing meta-info
-    """
-    meta = dict()
-    try:
-        fp.seek(0)
-    except:
-        pass
-    for line in fp.readline():
-        if line == '':
-            return meta
-        result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
-        if result:
-            attr, value = result.group(1).strip().lower(), result.group(2).strip()
-            meta[attr] = value
-    return meta
 
 
 class PostError(Exception):
@@ -72,7 +49,7 @@ class MetaInfo(object):
         if attr in ['author', 'category', 'datetime', 'tags', 'title', 'url']:
             getattr(self, "set_{}".format(attr))(value)
         else:
-            Log.debug('Error attr in <set_attr_value> (attr="{attr}", value="{value}")'.format(
+            log.debug('Error attr in <set_attr_value> (attr="{attr}", value="{value}")'.format(
                 attr=attr, value=value
             ))
 
@@ -94,8 +71,8 @@ class MetaInfo(object):
     def load_from_file(self, filename, config):
         """load meta data from a file. return self upon finishing"""
         try:
-            file = codecs.open(filename, 'r', 'utf-8')
-            for line in file.readline():
+            fp = codecs.open(filename, 'r', 'utf-8')
+            for line in fp.readline():
                 if line == '':
                     break
                 result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
@@ -104,24 +81,27 @@ class MetaInfo(object):
                     value = result.group(2).strip()
                     self.set_attr_value(attr, value)
         except Exception, e:
-            Log.warning('Cannot retrieve meta info from' + filename + '!\n' + str(e))
+            log.warning('Cannot retrieve meta info from' + filename + '!\n' + str(e))
         return self.init(config)
 
     def __le__(self, other):
         return self.datetime < other.datetime
 
 class Post(object):
-    def __init__(self, filename):
+    def __init__(self, filename, config):
         self.meta_info = MetaInfo()
-        self.raw_content = ''
-        self.need_compilation = True
+        self.meta_info.load_from_file(filename, config)
+        self.need_compilation = False
         self.filename = filename
 
+    def init_meta(self):
+        self.meta_info.load_from_file(self.filename)
+
     def generate_html_content(self):
-        """Generate html content"""
+        """Return generated html content"""
         with codecs.open(self.filename, 'r', 'utf-8') as fp:
-            self.content = Util.mk_transfer(self.fp.read())
-        return self
+            content = util.mk_transfer(fp.read())
+        return content
 
     def get_url(self, urls):
         """Get the real url of the post. Resolve conflicts by appending -n to the base url"""
