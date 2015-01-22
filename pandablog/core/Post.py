@@ -9,28 +9,6 @@ from datetime import datetime
 import codecs
 
 
-# def get_post_meta_from_file(fp):
-#     """Takes a file and return a dict containing meta-data from the text file. It will try to extract
-#     meta-info from every line before it reach the first empty line, which separates the meta-date and the content.
-#     Each meta-info should be in the form of "attr:value". Attributes are case-insensitive during analyzing
-#     and output attribute will be in lower-case. Any text unrecognized as meta info will be treated as content.
-#     :return: a dict containing meta-info
-#     """
-#     meta = dict()
-#     try:
-#         fp.seek(0)
-#     except:
-#         pass
-#     for line in fp.readline():
-#         if line == '':
-#             return meta
-#         result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
-#         if result:
-#             attr, value = result.group(1).strip().lower(), result.group(2).strip()
-#             meta[attr] = value
-#     return meta
-
-
 class PostError(Exception):
     pass
 
@@ -114,10 +92,13 @@ class Post(object):
     def __init__(self, filename, config):
         self.fp = codecs.open(filename, 'r', 'utf-8')
         self.meta_info = MetaInfo().load_from_file(self.fp, config)
-        # self.need_compilation = True
+        self.need_compilation = True
         self.filename = filename
         self.url = None
         self.content = None
+
+    def init_meta(self):
+        self.meta_info.load_from_file(self.filename)
 
     def generate_html_content(self):
         """Generate html content"""
