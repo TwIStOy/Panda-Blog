@@ -52,7 +52,7 @@ class Loader(object):
 
     def _load_post(self):
         file_list = os.listdir(self.paths['post'])
-        file_list = filter(lambda name: name.endwith(".md"), file_list)
+        file_list = filter(lambda name: name.endswith(".md"), file_list)
         posts = map(lambda name: post.Post(Util.get_path(self.paths['post'], name),
                                            self.global_config), file_list)
         urls = []
@@ -63,7 +63,7 @@ class Loader(object):
 
     def _load_page(self):
         file_list = os.listdir(self.paths['page'])
-        file_list = filter(lambda name: name.endwith(".md"), file_list)
+        file_list = filter(lambda name: name.endswith(".md"), file_list)
         return map(lambda name: post.Post(Util.get_path(self.paths['page'], name),
                                           self.global_config), file_list)
 
@@ -80,7 +80,7 @@ class Loader(object):
         for part in parts:
             for func in self.callback['< {}'.format(part)]:
                 func(self)
-            resource[part] = getattr(self, "_load_{}".foramt(part))()
+            resource[part] = getattr(self, "_load_{}".format(part))()
             for func in self.callback['> {}'.format(part)]:
                 func(self)
         return resource

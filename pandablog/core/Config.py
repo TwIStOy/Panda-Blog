@@ -28,7 +28,7 @@ class ConfigBase(object):
         self.file_name = file_name
 
     def load(self):
-        pass
+        return self
 
     def get(self, attr):
         if hasattr(self, attr):
@@ -48,5 +48,6 @@ class ConfigFromJson(ConfigBase):
                     attr=item, name=self.__class__.__name__
                 ))
             setattr(self, item, config.get(item))
+        return self
 
 Config = ConfigFromJson

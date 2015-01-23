@@ -66,14 +66,15 @@ class MetaInfo(object):
         if not self.datetime:
             self.datetime = config.default_datetime
         if not self.url:
-            self.url = urllib.urlencode(self.title)
+            self.url = urllib.quote(self.title)
         return self
 
     def load_from_file(self, fp, config):
         """load meta data from a file. return self upon finishing"""
         try:
-            for line in fp.readline():
-                if line == '':
+            while True:
+                line = fp.readline()
+                if line == '\n' or line == "":
                     break
                 result = re.search('^(.+?):(.+)$', line, re.IGNORECASE)
                 if result:
@@ -97,12 +98,10 @@ class Post(object):
         self.url = None
         self.content = None
 
-    def init_meta(self):
-        self.meta_info.load_from_file(self.filename)
-
     def generate_html_content(self):
         """Generate html content"""
-        self.content = Util.mk_transfer(self.fp.read())
+        self.content = Util.mk_transfer(self.fp)
+        self.fp.close()
         return self
 
     def get_url(self, urls):
