@@ -10,7 +10,7 @@ import Util as util
 
 class Controller(object):
     def __init__(self, root):
-        self.global_config = Config.load_config(root)
+        global_config = Config.Config(util.get_path(root, 'config.json'))
         self.loader = Loader.Loader(util.get_path(root, 'src'), global_config)
         self.selector = Selector.Selector(root)
         self.renderer = Renderer.Renderer(root, global_config)

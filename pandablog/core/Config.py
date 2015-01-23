@@ -1,16 +1,52 @@
 # -*- coding:utf-8 -*-
+__author__ = "TwIStOy Phunching"
 """Load configuration from root path"""
 
-import Util
 import json
 import codecs
 import os
 
 
-def load_config(root):
-    if os.path.isfile(Util.get_path(root, 'config.json')):
-        with codecs.open(Util.get_path(root, 'config.json'), "r", encoding='utf-8') as fp:
+class ConfigError(Exception):
+    pass
+
+
+def load_config_json(file_name):
+    if os.path.isfile(file_name):
+        with codecs.open(file_name, "r", encoding='utf-8') as fp:
             global_config = json.load(fp)
     else:
-        raise OSError('No "config.json" file! Please check and retry.')
+        raise OSError('No "{}" file! Please check and retry.'.format(file_name))
     return global_config
+
+
+class ConfigBase(object):
+    """
+        config class base
+    """
+    def __init__(self, file_name):
+        self.file_name = file_name
+
+    def load(self):
+        pass
+
+    def get(self, attr):
+        if hasattr(self, attr):
+            return getattr(self, attr)
+        else:
+            raise AttributeError('No attribute <{attr}> in class <{name}>'.format(
+                attr=attr, name=self.__class__.__name__
+            ))
+
+
+class ConfigFromJson(ConfigBase):
+    def load(self):
+        config = load_config_json(self.file_name)
+        for item in config:
+            if hasattr(self, item):
+                raise ConfigError("Illegal attribute <{attr}> in class <{name}>".format(
+                    attr=item, name=self.__class__.__name__
+                ))
+            setattr(self, item, config.get(item))
+
+Config = ConfigFromJson

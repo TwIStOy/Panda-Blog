@@ -39,8 +39,8 @@ class Selector(object):
                 getattr(self, '_{a}_verify'.format(a=a))(p)
                 for func in self.callback['> {p} {a}'.format(p=p, a=a)]:
                     func(self)
-        rv['post'] = filter(lambda po: po.make, self.resource['post'])
-        rv['page'] = filter(lambda pa: pa.make, self.resource['page'])
+        rv['post'] = filter(lambda po: po.need_compilation, self.resource['post'])
+        rv['page'] = filter(lambda pa: pa.need_compilation, self.resource['page'])
         for func in self.callback['< archive']:
             func(self)
         rv['archive'] = self._archive()
@@ -89,7 +89,7 @@ class Selector(object):
         new_post_info = dict()
         for p in self.resource[which]:
             if p.md5 == info.get(p.url):
-                p.make = False
+                p.need_compilation = False
             new_post_info[p.url] = p.md5
         with codecs.open(util.get_path(self.root, "src", which, ".info"), "w", encoding='utf-8') as fp:
             json.dump(new_post_info, fp)
@@ -108,14 +108,14 @@ class Selector(object):
         for public in public_post_list:
             if public in url_to_root:
                 if url_to_root[public].root != public_info.get(public):
-                    url_to_root[public].make = True
+                    url_to_root[public].need_compilation = True
             else:
                 garbage.append(public)
 
         new_public_info = {}
         for post in posts:
             if post.url not in public_post_list:
-                post.make = True
+                post.need_compilation = True
             new_public_info[post.url] = post.root
 
         with codecs.open(util.get_path(self.root, "public", which, ".info"), "w", encoding='utf-8') as fp:
