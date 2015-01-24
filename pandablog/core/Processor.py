@@ -11,7 +11,7 @@ import Util
 
 
 class Processor(object):
-    """Selector is the second part of the controller.
+    """Processor is the second part of the controller.
         plugin can be registered at such positions as key string:
             - before all(include init): "<"
             - before post verify(md5): "< post md5"

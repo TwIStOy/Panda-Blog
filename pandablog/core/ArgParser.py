@@ -1,64 +1,118 @@
 __author__ = 'TwIstOy'
 
+import codecs
+import os
+import Util
+import argparse
+import time
 
-import collections
-import sys
+name_to_command = dict()
+parser = argparse.ArgumentParser('panda: a simple static blog generator. \n'
+                                 '\tThere are modes: create, delete, init, generate.\n'
+                                 '\tcreate mode: ["create", "new", "add", "n"]\n'
+                                 '\tdelete mode: ["delete", "omit", remove", "d"]\n'
+                                 '\tinit mode: ["init", "i"]\n'
+                                 '\tgenerate mode: ["generate", "g"]\n'
+                                 "Here's the options:")
+parser.add_argument('-t', '--title', metavar='TITLE', default='hello world', type=str, dest='title',
+                    help="The title of post or page. Only used in <create mode>.")
+parser.add_argument('-d', '--date', metavar='DATE',
+                    default=time.strftime('%Y-%m-%d',time.localtime(time.time())), type=str, dest='date',
+                    help="The data of post or page. Format YY-MM-DD. Only used in <create mode>.")
+parser.add_argument('-a', '--author', metavar='AUTHOR', default=None, dest='author',
+                    help='The author of post or page. Only used in <create mode>.')
+parser.add_argument('-u', '--url', metavar='URL', default=None, type=str, dest='url',
+                    help='The url of post or page. Only used in <create mode>. If not'
+                         'specified, it will be the quote of title.')
+parser.add_argument('-T', '--tags', metavar='TAGS', dest='tags', default=None,
+                    help='The tags of new post. If not specified, it will be empty. You'
+                         'can split them will ",".')
+
+parser.add_argument('-c', '--category', metavar='CATEGORY', dest='category', default=None,
+                    help='The category of new post. If not specified, it will be "Uncategorized".')
+parser.add_argument('-f', '--filename', metavar='FILENAME', dest='filename', default=None,
+                    help='The filename which you want to operate.')
+parser.add_argument('-F', '--form', metavar='FORM', dest='form', default=None,
+                    help='Which form you want to operate. "post" of "page".')
 
 
-class ArgParserError(Exception):
+class ArgumentError(Exception):
     pass
 
 
-class ArgParser(object):
+def create_action(info):
+    infos = ['title', 'date', 'tags', 'category', 'author', 'url']
+    if info.form and info.filename:
+        context = []
+        for name in infos:
+            if getattr(info, name):
+                context.append('{name}: {value}'.format(name=name, value=getattr(info, name)))
+        with codecs.open(Util.get_path(os.getcwd(), "src", info.form, info.filename)) as fp:
+            context.extend(["", "# hello world"])
+            fp.write("\n".join(context))
+    else:
+        raise ArgumentError('Necessary option is missing.')
 
-    def __init__(self):
-        self.catch_list_short = dict()
-        self.catch_list_long = dict()
-        self.info = collections.namedtuple('info', 'metavar type_return default des help_doc need')
 
-    def exit(self):
-        sys.stderr.write("Error command arguments.")
-        sys.exit(1)
+name_to_command['create'] = 'create'
+name_to_command['add'] = 'create'
+name_to_command['new'] = 'create'
+name_to_command['n'] = 'create'
 
-    def parse_argument(self, args):
-        state = 'CATCH'
-        where = None
-        rv = dict()
-        for arg in args:
-            if state == 'CATCH':  # catch state
-                if arg.startwith('--'):  # long argument
-                    if arg in self.catch_list_long:
-                        if self.catch_list_long[arg].need:
-                            state = 'GET'
-                            where = self.catch_list_long[arg]
-                    else:
-                        self.exit()
-                else:  # short argument
-                    if self.catch_list_short[arg].need:
-                        state = 'GET'
-                        where = self.catch_list_short[arg]
-                    else:
-                        self.exit()
-            else:  # GET state
-                if arg.startwith('-'):
-                    self.exit()
-                rv[where.des] = where.type_return(arg)
-        return rv
 
-    def add_argument(self, *args, **kwargs):
-        info_now = self.info(**kwargs)
-        for arg in args:
-            if not isinstance(arg, str):
-                raise ArgParserError("Input object is not str. Please check and retry.")
-            arg = arg.strip()
-            if len(arg) <= 3:
-                catch = '-' + arg
-                if catch in self.catch_list_short:
-                    raise ArgParserError('{arg} already exists.'.format(catch))
-                self.catch_list_short[catch] = info_now
-            else:
-                catch = '--' + arg
-                if catch in self.catch_list_long:
-                    raise ArgParserError('{arg} already exists.'.format(catch))
-                self.catch_list_long[catch] = info_now
+def delete_action(info):
+    if info.form and info.filename:
+        file_path = Util.get_path(os.getcwd(), "src", info.form, info.filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+    else:
+        raise ArgumentError('Necessary option is missing.')
 
+
+name_to_command['delete'] = 'delete'
+name_to_command['remove'] = 'delete'
+name_to_command['omit'] = 'delete'
+name_to_command['d'] = 'delete'
+
+
+def init_action(info):
+    if info.root:
+        root = info.root
+    else:
+        root = os.getcwd()
+    Util.create_dir(Util.get_path(root, 'src', 'post'))
+    Util.create_dir(Util.get_path(root, 'src', 'page'))
+    Util.create_dir(Util.get_path(root, 'public', 'post'))
+    Util.create_dir(Util.get_path(root, 'public', 'page'))
+    Util.create_dir(Util.get_path(root, 'theme', 'default'))
+    # todo: default theme should be written to file here
+
+
+name_to_command['init'] = 'init'
+name_to_command['i'] = 'init'
+
+
+def generate_action(info):
+    import Core
+
+    if info.root:
+        Core.Core(info.root).run()
+    else:
+        Core.Core(os.getcwd()).run()
+
+
+name_to_command['generate'] = 'generate'
+name_to_command['g'] = 'generate'
+
+
+def help_action(info):
+    parser.print_help()
+
+name_to_command['help'] = 'help'
+name_to_command['h'] = 'help'
+
+
+def arg_parse(arg_list):
+    if arg_list[0] not in name_to_command:
+        raise ArgumentError('{} is illegal.'.format(arg_list[0]))
+    return parser.parse_args(arg_list[1])
