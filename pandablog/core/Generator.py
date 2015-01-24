@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 __author__ = 'TwIStOy'
 
-import Util as util
+import Util
 import codecs
 
 class Generator(object):
@@ -46,8 +46,8 @@ class Generator(object):
             self.context['page_title'] = post.title
             self.context['post'] = post
             text = self.resource['template'][which].render(**self.context)
-            util.create_dir(util.get_path(self.root, 'public', which, post.url))
-            with codecs.open(util.get_path(self.root, 'public', which, post.url, 'index.html'), 'w', encoding='utf-8') as fp:
+            Util.create_dir(Util.get_path(self.root, 'public', which, post.url))
+            with codecs.open(Util.get_path(self.root, 'public', which, post.url, 'index.html'), 'w', encoding='utf-8') as fp:
                 fp.write(text)
 
     def _render_archive(self, which):
@@ -56,8 +56,8 @@ class Generator(object):
             self.context['page_title'] = "Archive {} - {}".format(which, ar)
             self.context['archive'] = po
             text = self.resource['template'][which].render(**self.context)
-            util.create_dir(util.get_path(self.root, 'public', 'archive', which, ar))
-            with codecs.open(util.get_path(self.root, 'public', 'archive', which, ar, "index.html"), "w", encoding='utf-8') as fp:
+            Util.create_dir(Util.get_path(self.root, 'public', 'archive', which, ar))
+            with codecs.open(Util.get_path(self.root, 'public', 'archive', which, ar, "index.html"), "w", encoding='utf-8') as fp:
                 fp.write(text)
 
     def _render(self):
@@ -81,3 +81,7 @@ class Generator(object):
         self._render()
         for func in self.callback['>']:
             func(self)
+
+    # This is later api
+    def generate(self, resource):
+        pass

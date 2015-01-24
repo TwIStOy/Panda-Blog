@@ -1,13 +1,13 @@
 __author__ = 'TwIStOy'
 
-import Util as util
 import os
 import json
 import shutil
-import Error
 import itertools
 import collections
 import codecs
+import Error
+import Util
 
 
 class Processor(object):
@@ -60,6 +60,10 @@ class Processor(object):
             func(self)
         return rv
 
+    # This will be later api
+    def process(self, resource):
+        pass
+
     def register(self, position, callback):
         """register callback at position.
         callback object must be callable and no return,
@@ -72,7 +76,7 @@ class Processor(object):
             raise Error.CoreError('Error position register in Selector.')
         self.callback[position].append(callback)
 
-    def __init__(self, root):
+    def __init__(self, root, global_config):
         # root: /panda/
         self.root = root
         self.resource = None
@@ -85,13 +89,13 @@ class Processor(object):
         """verify posts' md5, if equal, "make" will be False
         :return:
         """
-        info = util.get_json(util.get_path(self.root, "src", which, ".info"))
+        info = Util.get_json(Util.get_path(self.root, "src", which, ".info"))
         new_post_info = dict()
         for p in self.resource[which]:
             if p.md5 == info.get(p.url):
                 p.need_compilation = False
             new_post_info[p.url] = p.md5
-        with codecs.open(util.get_path(self.root, "src", which, ".info"), "w", encoding='utf-8') as fp:
+        with codecs.open(Util.get_path(self.root, "src", which, ".info"), "w", encoding='utf-8') as fp:
             json.dump(new_post_info, fp)
 
     def _public_verify(self, which):
@@ -99,8 +103,8 @@ class Processor(object):
         :return:
         """
         public_post_list = filter(lambda name: os.path.isdir(name),
-                                  os.listdir(util.get_path(self.root, "public", "post")))
-        public_info = util.get_json(util.get_path(self.root, "public", "post", ".info"))
+                                  os.listdir(Util.get_path(self.root, "public", "post")))
+        public_info = Util.get_json(Util.get_path(self.root, "public", "post", ".info"))
 
         garbage = []
         posts = self.resource[which]
@@ -118,11 +122,11 @@ class Processor(object):
                 post.need_compilation = True
             new_public_info[post.url] = post.root
 
-        with codecs.open(util.get_path(self.root, "public", which, ".info"), "w", encoding='utf-8') as fp:
+        with codecs.open(Util.get_path(self.root, "public", which, ".info"), "w", encoding='utf-8') as fp:
             json.dump(new_public_info, fp)
 
         for name in garbage:
-            shutil.rmtree(util.get_path(self.root, "public", which, name))
+            shutil.rmtree(Util.get_path(self.root, "public", which, name))
 
     def _archive(self):
         archive = dict()
@@ -136,17 +140,17 @@ class Processor(object):
         archive['category'] = itertools.groupby(self.resource['post'], lambda p: p.category)
 
         def _archive_select(which):
-            archive_info = util.get_json(util.get_path(self.root, 'public', 'archive', which, ".info"))
+            archive_info = Util.get_json(Util.get_path(self.root, 'public', 'archive', which, ".info"))
             new_archive_info = dict()
             for t, p in archive[which]:
                 new_archive_info[t] = [p.root for p in archive[which][t]]
             file_list = filter(lambda name: os.path.isdir(
-                util.get_path(self.root, 'public', 'archive', which, name)), os.listdir(
-                util.get_path(self.root, 'public', 'archive', which)))
+                Util.get_path(self.root, 'public', 'archive', which, name)), os.listdir(
+                Util.get_path(self.root, 'public', 'archive', which)))
             garbage = [name for name in file_list if name not in new_archive_info]
             for name in garbage:
-                shutil.rmtree(util.get_path(self.root, 'public', 'archive', which, name))
-            with codecs.open(util.get_path(self.root, 'public', 'archive', which, ".info"), "w", encoding='utf-8') as fp:
+                shutil.rmtree(Util.get_path(self.root, 'public', 'archive', which, name))
+            with codecs.open(Util.get_path(self.root, 'public', 'archive', which, ".info"), "w", encoding='utf-8') as fp:
                 json.dump(new_archive_info, fp)
             return [t for t, p in new_archive_info if archive_info.get(t) == p]
 

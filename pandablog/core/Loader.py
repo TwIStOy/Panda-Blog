@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 __author__ = 'TwIStOy'
 
-import Post as post
 import os
 import collections
 from jinja2 import Environment, FileSystemLoader
+
 import Error
 import Util
+import Post
 
 
 class Loader(object):
@@ -53,7 +54,7 @@ class Loader(object):
     def _load_post(self):
         file_list = os.listdir(self.paths['post'])
         file_list = filter(lambda name: name.endswith(".md"), file_list)
-        posts = map(lambda name: post.Post(Util.get_path(self.paths['post'], name),
+        posts = map(lambda name: Post.Post(Util.get_path(self.paths['post'], name),
                                            self.global_config), file_list)
         urls = []
         posts.sort()
@@ -64,7 +65,7 @@ class Loader(object):
     def _load_page(self):
         file_list = os.listdir(self.paths['page'])
         file_list = filter(lambda name: name.endswith(".md"), file_list)
-        return map(lambda name: post.Post(Util.get_path(self.paths['page'], name),
+        return map(lambda name: Post.Post(Util.get_path(self.paths['page'], name),
                                           self.global_config), file_list)
 
     def _load_template(self):

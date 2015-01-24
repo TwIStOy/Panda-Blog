@@ -3,17 +3,12 @@ __author__ = 'TwIStOy Phunching'
 
 import urllib
 import re
-import Log
-import Util
 from datetime import datetime
 import codecs
+import Log
+import Util
 
 
-class PostError(Exception):
-    pass
-
-
-# TODO: write error handling to make this class more robust
 class MetaInfo(object):
     def __init__(self):
         self.author = None

@@ -1,2 +1,2 @@
 # -*- coding:utf-8 -*-
-__author__ = 'TwIStOy phunching'
+__author__ = 'TwIStOy FanChing'

@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-__author__ = "TwIStOy Phunching"
+__author__ = "TwIStOy FanChing"
 """Load configuration from root path"""
 
 import json
