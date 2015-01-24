@@ -4,13 +4,13 @@ import Util as util
 import os
 import json
 import shutil
-import ControllerError as controller_error
+import Error
 import itertools
 import collections
 import codecs
 
 
-class Selector(object):
+class Processor(object):
     """Selector is the second part of the controller.
         plugin can be registered at such positions as key string:
             - before all(include init): "<"
@@ -69,7 +69,7 @@ class Selector(object):
                         '< post public', '> post public', '< page public', '> page public',
                         '< archive', '> archive', '>']
         if position not in position_key:
-            raise controller_error.ControllerError('Error position register in Selector.')
+            raise Error.CoreError('Error position register in Selector.')
         self.callback[position].append(callback)
 
     def __init__(self, root):
@@ -151,5 +151,3 @@ class Selector(object):
             return [t for t, p in new_archive_info if archive_info.get(t) == p]
 
         return {ahv: _archive_select(ahv) for ahv in ['tag', 'month', 'author', 'category']}
-
-

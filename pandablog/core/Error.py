@@ -1,6 +1,6 @@
 __author__ = 'TwIStOy'
 
 
-class ControllerError(Exception):
+class CoreError(Exception):
     pass
 
