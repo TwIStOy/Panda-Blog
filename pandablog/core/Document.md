@@ -1,6 +1,6 @@
-=======
+-------
 Modules
-=======
+-------
 | Module        | Usage                                       |
 | ------------- |---------------------------------------------------------------------|
 | ArgParser     | parser for arguments passed to executive.                           |
@@ -16,9 +16,9 @@ Modules
 | Util          | utilities used in all part of this app.                             |
 | Plugin        | implement plugin registration procdure.                             |
 
-======================
+----------------------
 Operation on PandaBlog
-======================
+----------------------
 ```
 USAGE: panda [operation]
 
@@ -28,9 +28,9 @@ The operation can be:
     force-generate    clean the record and regenerate
 ```
 
-====================
+--------------------
 Generation Algorithm
-====================
+--------------------
 * In later description, we will refer to the making of a single page as `compilation`, the process of producing the entire website as `generation`. The markdown files as `source file`, `post` and `page` as `article`.
 * In the generation process, we will minimalize the html file change because this will make the update of a static website easier, otherwise we will lose one of the most valuable features of static blog.
 
@@ -51,15 +51,20 @@ Before the generation, we define the following protocol for site generation:
 * Each article may explicit own an `url` attribute, which will be referred in generation process to specify the url of the article. However, multiple article may own the same url. So, to avoid conflict, we will append a number after the url. Older article has more priority on determining its url.
 * A article is *altered* when its component has been modified.
 
-The `Panda-Blog` will generate the site with the following procedure:
+Generation of the site was each handled by **Loader**, **Processor**, and **Generator**:
+#### Loader
 * Before the generation, we keep a record of the previous generation. In this record, we store all posts' hash value during the previous generation and the datetime of the previous generation. [`Loader`]
 * Then, scan the entire `src` folder, will read every files and calculate their hash values. [`Loader`]
-* Sort the pages and posts by their datetime. [`Processor`]
-* Determine real url with define conflict resolve protocol. [`Processor`]
-* Draw a graph on how articles and archives are related for further analyzation. [`Processor`]
-* Mark article that need compilation. [`Processor`]
-* Compile marked article. (Delete old html, generate new html) [`Generator`]
-* Generate site content for archives.
-* Generate `index.html`
+
+#### Processor
+* Sort the pages and posts by their datetime.
+* Determine real url with define conflict resolve protocol.
+* Draw a graph on how articles and archives are related for further analyzation.
+* Mark article that need compilation.
+
+#### Generator
+* Compile marked article. Delete obsolete file.
+* Generate site content for archives. Delete obsolete file.
+* Generate `index.html` Delete obsolete file.
 
 TODO: Add description on how to handle `assets` folder.
