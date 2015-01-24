@@ -5,8 +5,8 @@ import Post as post
 import os
 import collections
 from jinja2 import Environment, FileSystemLoader
-import ControllerError as controller_error
-from pandablog.core import Util
+import Error
+import Util
 
 
 class Loader(object):
@@ -47,7 +47,7 @@ class Loader(object):
         position_key = ['<', '< post', '> post', '< page', '> page',
                         '< template', '> template', '>']
         if position not in position_key:
-            raise controller_error.ControllerError('Error position register in Loader.')
+            raise Error.CoreError('Error position register in Loader.')
         self.callback[position].append(callback)
 
     def _load_post(self):

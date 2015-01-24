@@ -4,7 +4,7 @@ __author__ = 'TwIStOy'
 import Util as util
 import codecs
 
-class Renderer(object):
+class Generator(object):
     """Renderer is the last part of the controller.
         It will render the all the pages(include post, page and archive), and write them into file.
         plugin can be registered at such positions as key strings:
