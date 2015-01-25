@@ -66,6 +66,7 @@ class MetaInfo(object):
 
     def load_from_file(self, fp, config):
         """load meta data from a file. return self upon finishing"""
+        fp.seek(0)
         try:
             while True:
                 line = fp.readline()
@@ -83,10 +84,14 @@ class MetaInfo(object):
     def __le__(self, other):
         return self.datetime < other.datetime
 
+    def __gt__(self, other):
+        return not self.__le__(other)
+
 
 class Post(object):
     def __init__(self, filename, config):
         self.fp = codecs.open(filename, 'r', 'utf-8')
+        self.md5 = Util.get_file_md5(self.fp)
         self.meta_info = MetaInfo().load_from_file(self.fp, config)
         self.need_compilation = True
         self.filename = filename
@@ -109,10 +114,11 @@ class Post(object):
                 addition += 1
             now += str(addition)
         self.url = now
+        urls.append(now)
         return self
 
     def __le__(self, other):
         return self.meta_info < other.meta_info
 
-    def __ge__(self, other):
+    def __gt__(self, other):
         return not self.__le__(other)

@@ -4,6 +4,7 @@ __author__ = 'TwIStOy'
 import Util
 import codecs
 
+
 class Generator(object):
     """Renderer is the last part of the controller.
         It will render the all the pages(include post, page and archive), and write them into file.
@@ -39,7 +40,6 @@ class Generator(object):
             "nav_links": [{"url": "{}/page/{}/".format(self.global_config.get('url'), page.name),
                            'value': page.title} for page in resource['page']]
         }
-        pass
 
     def _render_post(self, which):
         for post in self.for_render[which]:

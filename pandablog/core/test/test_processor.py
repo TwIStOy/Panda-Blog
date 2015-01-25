@@ -1,23 +1,16 @@
 __author__ = 'TwIStOy'
 
 import unittest
+from pandablog.core import Processor
 from pandablog.core import Loader
 from pandablog.core import Util
 from pandablog.core import Config
+from pandablog.core import Post
 import codecs
 import json
-import os
 
 
-class LoaderTest(unittest.TestCase):
-
-    def test_all(self):
-        global_config = Config.Config('c:\\panda\\config.json').load()
-        loader = Loader.Loader('c:\\panda\\src', global_config)
-        resource = loader.run()
-        self.assertEqual(True, True)
-        for post in resource['post']:
-            print post.url, post.meta_info.datetime
+class TestProcessor(unittest.TestCase):
 
     def setUp(self):
         # create a temporary source environment
@@ -45,7 +38,7 @@ class LoaderTest(unittest.TestCase):
                 'category: test',
                 'author: test',
                 'title: title_test',
-                'datetime: 1000-1-2',
+                'datetime: 1000-1-1',
                 "",
                 "# a",
                 "## aa"
@@ -55,7 +48,7 @@ class LoaderTest(unittest.TestCase):
                 'category: test',
                 'author: test',
                 'title: title_test',
-                'datetime: 1000-1-3',
+                'datetime: 1000-1-2',
                 "",
                 "# a",
                 "## aa"
@@ -65,7 +58,7 @@ class LoaderTest(unittest.TestCase):
                 'category: test',
                 'author: test',
                 'title: title_test',
-                'datetime: 1000-1-1',
+                'datetime: 1000-1-3',
                 "",
                 "# a",
                 "## aa"
@@ -85,7 +78,41 @@ class LoaderTest(unittest.TestCase):
             with codecs.open('c:\\panda\\src\\theme\\default\\{}.html'.format(template_name), "w", "utf-8") as fp:
                 fp.write("<h1>hello world</h1>")
 
+        global_config = Config.Config('c:\\panda\\config.json').load()
+        loader = Loader.Loader('c:\\panda\\src', global_config)
+        self.resource = loader.run()
+        self.processor = Processor.Processor("c:\\panda", global_config)
+        Util.create_dir('c:\\panda\\public\\post')
+        Util.create_dir('c:\\panda\\public\\page')
+        Util.create_dir('c:\\panda\\public\\archive\\tag')
+        Util.create_dir('c:\\panda\\public\\archive\\category')
+        Util.create_dir('c:\\panda\\public\\archive\\author')
+        Util.create_dir('c:\\panda\\public\\archive\\month')
+
+    def test_all(self):
+        self.processor.run(self.resource)
+        for item in self.resource['post']:
+            self.assertIsInstance(item, Post.Post)
+            self.assertTrue(item.need_compilation)
+        for item2 in self.resource['page']:
+            self.assertIsInstance(item2, Post.Post)
+            self.assertTrue(item2.need_compilation)
+
+        self.processor.run(self.resource)
+        for item in self.resource['post']:
+            print item.url
+            Util.create_dir(Util.get_path("c:\\panda\\public\\post", item.url))
+        for item2 in self.resource['page']:
+            print item2.url
+            Util.create_dir(Util.get_path("c:\\panda\\public\\page", item2.url))
+        for item in self.resource['post']:
+            self.assertTrue(not item.need_compilation)
+        for item2 in self.resource['page']:
+            self.assertTrue(not item2.need_compilation)
+
     def tearDown(self):
         pass
 
-    pass
+
+if __name__ == '__main__':
+    unittest.main()

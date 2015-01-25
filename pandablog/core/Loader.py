@@ -4,7 +4,6 @@ __author__ = 'TwIStOy'
 import os
 import collections
 from jinja2 import Environment, FileSystemLoader
-
 import Error
 import Util
 import Post
@@ -65,8 +64,14 @@ class Loader(object):
     def _load_page(self):
         file_list = os.listdir(self.paths['page'])
         file_list = filter(lambda name: name.endswith(".md"), file_list)
-        return map(lambda name: Post.Post(Util.get_path(self.paths['page'], name),
-                                          self.global_config), file_list)
+        pages = map(lambda name: Post.Post(Util.get_path(self.paths['page'], name),
+                                           self.global_config), file_list)
+        urls = []
+        pages.sort()
+        for page in pages:
+            page.get_url(urls)
+        return pages
+
 
     def _load_template(self):
         env = Environment(loader=FileSystemLoader(self.paths['template']))

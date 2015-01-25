@@ -80,7 +80,7 @@ class Processor(object):
         # root: /panda/
         self.root = root
         self.resource = None
-        self.callback = dict()
+        self.callback = collections.defaultdict(list)
 
     def _init(self, resource):
         self.resource = resource
@@ -89,13 +89,13 @@ class Processor(object):
         """verify posts' md5, if equal, "make" will be False
         :return:
         """
-        info = Util.get_json(Util.get_path(self.root, "src", which, ".info"))
+        info = Util.get_json(Util.get_path(self.root, "src", which, ".md5.info"))
         new_post_info = dict()
         for p in self.resource[which]:
             if p.md5 == info.get(p.url):
                 p.need_compilation = False
             new_post_info[p.url] = p.md5
-        with codecs.open(Util.get_path(self.root, "src", which, ".info"), "w", encoding='utf-8') as fp:
+        with codecs.open(Util.get_path(self.root, "src", which, ".md5.info"), "w", encoding='utf-8') as fp:
             json.dump(new_post_info, fp)
 
     def _public_verify(self, which):
@@ -103,26 +103,26 @@ class Processor(object):
         :return:
         """
         public_post_list = filter(lambda name: os.path.isdir(name),
-                                  os.listdir(Util.get_path(self.root, "public", "post")))
-        public_info = Util.get_json(Util.get_path(self.root, "public", "post", ".info"))
+                                  os.listdir(Util.get_path(self.root, "public", which)))
+        public_info = Util.get_json(Util.get_path(self.root, "public", which, ".public.info"))
 
         garbage = []
         posts = self.resource[which]
         url_to_root = {post.url: post for post in posts}
         for public in public_post_list:
             if public in url_to_root:
-                if url_to_root[public].root != public_info.get(public):
-                    url_to_root[public].need_compilation = True
+                if url_to_root[public].filename == public_info.get(public):
+                    url_to_root[public].need_compilation = False
             else:
                 garbage.append(public)
 
         new_public_info = {}
         for post in posts:
-            if post.url not in public_post_list:
-                post.need_compilation = True
-            new_public_info[post.url] = post.root
+            if post.url in public_post_list:
+                post.need_compilation = False
+            new_public_info[post.url] = post.filename
 
-        with codecs.open(Util.get_path(self.root, "public", which, ".info"), "w", encoding='utf-8') as fp:
+        with codecs.open(Util.get_path(self.root, "public", which, ".public.info"), "w", encoding='utf-8') as fp:
             json.dump(new_public_info, fp)
 
         for name in garbage:
@@ -130,20 +130,27 @@ class Processor(object):
 
     def _archive(self):
         archive = dict()
-        archive['month'] = itertools.groupby(self.resource['post'],
-                                             lambda p: "{}-{}".format(p.year, p.month))
+        archive['month'] = collections.defaultdict(list)
+        for p in self.resource['post']:
+            key = "{}-{}".format(p.meta_info.datetime.year, p.meta_info.datetime.month)
+            archive['month'][key].append(p)
         archive['tag'] = collections.defaultdict(list)
         for p in self.resource['post']:
-            for t in p.tag:
+            for t in p.meta_info.tags:
                 archive['tag'][t].append(p)
-        archive['author'] = itertools.groupby(self.resource['post'], lambda p: p.author)
-        archive['category'] = itertools.groupby(self.resource['post'], lambda p: p.category)
+        archive['author'] = collections.defaultdict(list)
+        for p in self.resource['post']:
+            archive['author'][p.meta_info.author].append(p)
+        archive['category'] = collections.defaultdict(list)
+        for p in self.resource['post']:
+            archive['category'][p.meta_info.category].append(p)
 
         def _archive_select(which):
             archive_info = Util.get_json(Util.get_path(self.root, 'public', 'archive', which, ".info"))
             new_archive_info = dict()
-            for t, p in archive[which]:
-                new_archive_info[t] = [p.root for p in archive[which][t]]
+            print archive[which]
+            for t in archive[which]:
+                new_archive_info[t] = [p.filename for p in archive[which][t]]
             file_list = filter(lambda name: os.path.isdir(
                 Util.get_path(self.root, 'public', 'archive', which, name)), os.listdir(
                 Util.get_path(self.root, 'public', 'archive', which)))
@@ -152,6 +159,5 @@ class Processor(object):
                 shutil.rmtree(Util.get_path(self.root, 'public', 'archive', which, name))
             with codecs.open(Util.get_path(self.root, 'public', 'archive', which, ".info"), "w", encoding='utf-8') as fp:
                 json.dump(new_archive_info, fp)
-            return [t for t, p in new_archive_info if archive_info.get(t) == p]
-
+            return [t for t, p in new_archive_info.iteritems() if archive_info.get(t) == p]
         return {ahv: _archive_select(ahv) for ahv in ['tag', 'month', 'author', 'category']}

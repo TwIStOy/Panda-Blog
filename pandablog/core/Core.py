@@ -17,6 +17,6 @@ class Core(object):
 
     def run(self):
         resources = self.loader.run()
-        self.processor.process(resources)
-        self.generator.generate(resources)
+        self.processor.run(resources)
+        self.generator.run(resources)
 
