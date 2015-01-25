@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>{%block title%}{{site_title}}{%endblock%}</title>
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" href="{{asset_path}}/favicon.ico">
+        <link rel="stylesheet" type="text/css" href="{{template_path}}/css/screen.css?v=d6d146992f" />
+        <link rel="stylesheet" type="text/css" href="http://fonts.useso.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+        <script type="text/javascript" src="{{asset_path}}/syntaxhighlighter/scripts/shCore.js"></script>
+        <script type="text/javascript" src="{{asset_path}}/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+        <link type="text/css" rel="stylesheet" href="{{asset_path}}/syntaxhighlighter/styles/shCoreDefault.css"/>
+        <script type="text/javascript">SyntaxHighlighter.all();</script>
+        <script type="text/javascript" src="{{asset_path}}/mathjax/http://file.twistoy.com/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="post-template">
+    {%block header%}{%endblock%}
+    {%block content%}{%endblock%}
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="{{site_url}}">{{site_title}}</a> &copy; {{year}}</section>
+        <section class="poweredby">Proudly published with <a href="#">PandaBlog</a></section>
+    </footer>
+    <script type="text/javascript" src="{{template_path}}/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="{{template_path}}/js/index.js"></script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css" rel="stylesheet"> 
+    <script src="http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

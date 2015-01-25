@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block header %}
+<header class="main-header {% if image%}" style="background-image: url({{image}}){% else %}no-cover{% endif %}">
+    <nav class="main-nav overlay clearfix">
+        {%if site_logo%}<a class="blog-logo" href="{{site_url}}"><img src="{{site_logo}}" alt="site Logo" /></a>{%endif%}
+    </nav>
+    <div class="vertical">
+        <div class="main-header-content inner">
+            <h1 class="page-title">{{site_title}}</h1>
+            <h2 class="page-description">{{site_description}}</h2>
+        </div>
+    </div>
+    <a class="scroll-down icon-arrow-left" href="#content" data-offset="-45"><span class="hidden">Scroll Down</span></a>
+</header>
+{%endblock%}
+
+{%block content%}
+<main id="content" class="content" role="main">
+{% for post in posts %}
+<article class="post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="{{url}}">{{post.title}}</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>{{post.excerpt}} <a class="read-more" href="{{post.url}}">&raquo;</a></p>
+    </section>
+    <footer class="post-meta">
+        {%if post.author.image%}<img class="author-thumb" src="{{post.author.image}}" alt="Author image" nopin="nopin" />{%endif%}
+        {{post.author.name}}
+        {%if post.tags%}&nbsp;on&nbsp;{%for tag in post.tags%}<a href="{{tag.url}}">{{tag.name}}</a>&nbsp;{%endfor%}{%endif%}
+        <time class="post-date" datetime="{{post.datetime}}">{{post.datetime}}</time>
+    </footer>
+</article>
+{%endfor%}
+</main>
+{%endblock%}
