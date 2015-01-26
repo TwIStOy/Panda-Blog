@@ -13,7 +13,7 @@
         <header class="post-header">
             <h1 class="post-title">{{title}}</h1>
             <section class="post-meta">
-            <time class="post-date" datetime="{{datetime}}">{{datetime}}</time>
+            <a href="{{datetime_url}}"><time class="post-date" datetime="{{datetime}}">{{datetime}}</time></a>
             {%if tags%}&nbsp;on&nbsp;{%for tag in tags %}<a href="{{tag.url}}">{{tag.name}}</a>&nbsp;{%endfor%}{%endif%}
             </section>
         </header>
