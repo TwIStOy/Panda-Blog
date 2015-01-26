@@ -29,6 +29,7 @@ Top-level variables listed in Common are used during any page generation.
 |---------------------|-------------------------------------------------------|
 | `{{content}}`       | Content of the single post.                           |
 | `{{datetime}}`      | datetime of the single post.                          |
+| `{{datetime_url}}`  | archive url for this datetime.                        |
 | `{{previous_url}}`  | url of previous post of this post .                   |
 | `{{next_url}}`      | url of next post of this post.                        |
 | `{{tags}}`          | A list of `tag`.                                      |
@@ -77,3 +78,5 @@ Top-level variables listed in Common are used during any page generation.
 |----------------------|-------------------------------------------------------|
 | `{{post.title}}`     | Post title                                            |
 | `{{post.content}}`   | Content of the post                                   |
+| `{{post.author}}`    | Post author                                           |
+| `{{post.url}}`       | url for this post                                     |

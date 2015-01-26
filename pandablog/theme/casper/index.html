@@ -20,16 +20,16 @@
 {% for post in posts %}
 <article class="post">
     <header class="post-header">
-        <h2 class="post-title"><a href="{{url}}">{{post.title}}</a></h2>
+        <h2 class="post-title"><a href="{{post.url}}">{{post.title}}</a></h2>
     </header>
     <section class="post-excerpt">
         <p>{{post.excerpt}} <a class="read-more" href="{{post.url}}">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         {%if post.author.image%}<img class="author-thumb" src="{{post.author.image}}" alt="Author image" nopin="nopin" />{%endif%}
-        {{post.author.name}}
+        <a href="{{post.author.url}}">{{post.author.name}}</a>
         {%if post.tags%}&nbsp;on&nbsp;{%for tag in post.tags%}<a href="{{tag.url}}">{{tag.name}}</a>&nbsp;{%endfor%}{%endif%}
-        <time class="post-date" datetime="{{post.datetime}}">{{post.datetime}}</time>
+        <a href="{{post.datetime_url}}"><time class="post-date" datetime="{{post.datetime}}">{{post.datetime}}</time></a>
     </footer>
 </article>
 {%endfor%}
